@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Willkommen auf meiner Seite</title>
+  <title>Willkommen asdasdasdauf meiner Seite</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 2rem; text-align: center; }
     h1 { color: #2c3e50; }
