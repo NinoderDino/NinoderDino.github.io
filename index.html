@@ -7,7 +7,7 @@
   <meta name="color-scheme" content="dark">
   <style>
     :root{
-      --bg:#0b0f14; --card:#111824; --muted:#9fb3c8; --text:#e6f0ff;
+      --bg:#0b0f14; --muted:#9fb3c8; --text:#e6f0ff;
       --accent:#7c4dff; --accent2:#00e5ff; --ok1:#10b981; --ok2:#22c55e;
     }
     *{box-sizing:border-box} html,body{height:100%}
@@ -30,7 +30,7 @@
     @keyframes drift { to { transform: translate3d(-20px,-10px,0) scale(1.02); } }
 
     .wrap{position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:28px 18px 80px}
-    header{display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:22px;}
+    header{display:flex; gap:18px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-bottom:14px;}
     .brand{display:flex; align-items:center; gap:14px;}
     .logo{width:56px; height:56px; border-radius:16px;
       background: conic-gradient(from 220deg, var(--accent), var(--accent2), var(--accent));
@@ -43,11 +43,15 @@
     }
     .tagline{margin-top:4px; color:var(--muted); font-size:14px}
 
+    .top-right{display:flex; align-items:center; gap:10px}
+    .status{font-size:12px; color:#a9c2e8}
+    .status.error{color:#ffb4b4}
+
     .members{display:flex; gap:12px; flex-wrap:wrap}
     .chip{
       background: linear-gradient(180deg, #1a2433, #0f1520);
       border:1px solid #213047; color:#cfe2ff;
-      padding:10px 14px; border-radius:999px; font-size:clamp(16px,2.8vw,22px); /* größer */
+      padding:10px 14px; border-radius:999px; font-size:clamp(16px,2.8vw,22px);
       box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 6px 20px rgba(0,0,0,.35);
     }
 
@@ -67,144 +71,4 @@
     }
 
     .game{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
-    .icon{width:34px; height:34px; border-radius:10px; flex:0 0 auto; display:grid; place-items:center; font-size:18px;
-      background: radial-gradient(circle at 30% 30%, #fff2, transparent 60%), #151f2c; border:1px solid #28374f;}
-    .card.done .icon{ background: linear-gradient(180deg, #1c2a22, #13241b); border-color:#1b4d37; }
-    .title{font-weight:700; letter-spacing:.02em;}
-
-    .row{display:flex; align-items:center; justify-content:space-between; gap:12px;}
-    .check{appearance:none; width:24px; height:24px; border-radius:8px; border:2px solid #3a4a68; display:grid; place-items:center; cursor:pointer; background:#0f1825; transition:.2s;}
-    .check:checked{ background: linear-gradient(180deg, var(--ok2), var(--ok1)); border-color:transparent; box-shadow: 0 0 18px rgba(16,185,129,.45); }
-    .check:checked::after{ content:"✓"; color:#062014; font-weight:900; font-size:15px; transform: translateY(-1px); }
-
-    .note{
-      width:100%; background:#0c131d; border:1px solid #1c283b; color:#dbe8ff;
-      padding:10px; border-radius:12px; resize:vertical; min-height:56px; font:inherit; margin-top:8px;
-    }
-
-    .progress{margin-top:22px; background:#0e1520; border:1px solid #233148; height:14px; border-radius:999px; overflow:hidden; position:relative;}
-    .bar{height:100%; width:0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); box-shadow: 0 0 25px rgba(124,77,255,.4) inset; transition: width .35s ease;}
-    .progress-label{display:flex; align-items:center; justify-content:space-between; margin-top:8px; color:var(--muted); font-size:13px;}
-
-    .tools{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px }
-    .btn{ background: linear-gradient(180deg, #1a2440, #121a2c); border:1px solid #2a3a58; color:#e8f2ff; padding:10px 14px; border-radius:12px; cursor:pointer; box-shadow: 0 10px 20px rgba(0,0,0,.3); transition:.12s; }
-    .btn:hover{ transform: translateY(-1px); box-shadow: 0 16px 28px rgba(0,0,0,.38); border-color:#3a5280 }
-    .btn.small{ padding:8px 10px; font-size:13px}
-    footer{margin-top:28px; color:#7f96b2; font-size:12px; text-align:center; opacity:.9}
-  </style>
-</head>
-<body>
-  <div class="stars" aria-hidden="true"></div>
-
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <h1>WIN CHALLENGE</h1>
-          <div class="tagline">Für Jan • Mailo • Michel • Nils</div>
-        </div>
-      </div>
-      <div class="members">
-        <span class="chip">Jan</span>
-        <span class="chip">Mailo</span>
-        <span class="chip">Michel</span>
-        <span class="chip">Nils</span>
-      </div>
-    </header>
-
-    <div class="tools">
-      <button class="btn small" id="markAll">Alle abhaken</button>
-      <button class="btn small" id="resetAll">Alles zurücksetzen</button>
-    </div>
-
-    <div id="cards" class="grid" role="list"></div>
-
-    <div class="progress" aria-label="Fortschritt">
-      <div class="bar" id="bar"></div>
-    </div>
-    <div class="progress-label">
-      <span>Fortschritt</span>
-      <span id="pct">0%</span>
-    </div>
-
-    <footer>Speichert automatisch im Browser (localStorage). Viel Spaß! ✨</footer>
-  </div>
-
-  <script>
-    // --- CONFIG ---
-    const GAMES = [
-      { key:"csgo",  name:"CS GO",       emoji:"🎯" },
-      { key:"lol",   name:"LOL – ARAM",  emoji:"🧊" },
-      { key:"rl",    name:"Rocket League", emoji:"🚗" },
-      { key:"fg",    name:"Fall Guys",   emoji:"🟣" },
-      { key:"mbw",   name:"Minecraft Bedwars", emoji:"⛏️" },
-      { key:"brot",  name:"Brotato",     emoji:"🍞" },
-      { key:"pubg",  name:"PUBG",        emoji:"🎮" },
-    ];
-    const STORAGE_KEY = "win-challenge-v2";
-    const state = loadState();
-    const cardsEl = document.getElementById("cards");
-
-    // Karten rendern
-    GAMES.forEach((g) => {
-      const card = document.createElement("article");
-      card.className = "card" + (state[g.key]?.done ? " done" : "");
-      card.setAttribute("role","listitem");
-      card.innerHTML = `
-        <div class="row">
-          <div class="game">
-            <div class="icon" aria-hidden="true">${g.emoji}</div>
-            <div class="title">${g.name}</div>
-          </div>
-          <input id="chk-${g.key}" class="check" type="checkbox" ${state[g.key]?.done ? "checked":""} aria-label="${g.name} erledigt">
-        </div>
-        <textarea id="note-${g.key}" class="note" placeholder="Was Lustiges passiert ist… (optional)">${state[g.key]?.note ?? ""}</textarea>
-      `;
-      cardsEl.appendChild(card);
-
-      // listeners
-      const chk = card.querySelector(`#chk-${g.key}`);
-      const note = card.querySelector(`#note-${g.key}`);
-      chk.addEventListener("change", () => {
-        ensure(g.key);
-        state[g.key].done = chk.checked;
-        card.classList.toggle("done", chk.checked);   // ganze Karte grün
-        saveState();
-        updateProgress();
-      });
-      note.addEventListener("input", () => {
-        ensure(g.key);
-        state[g.key].note = note.value;
-        saveState();
-      });
-    });
-
-    document.getElementById("markAll").addEventListener("click", () => {
-      GAMES.forEach(g => { ensure(g.key); state[g.key].done = true; });
-      saveState(); setChecks(); setCardStates(); updateProgress();
-    });
-    document.getElementById("resetAll").addEventListener("click", () => {
-      if(!confirm("Wirklich alles zurücksetzen?")) return;
-      localStorage.removeItem(STORAGE_KEY);
-      Object.keys(state).forEach(k => delete state[k]);
-      setChecks(); setNotes(); setCardStates(); updateProgress();
-    });
-
-    function ensure(k){ state[k] ??= {done:false, note:""} }
-    function setChecks(){ GAMES.forEach(g=>{ const el = byId(`chk-${g.key}`); if(el) el.checked = !!state[g.key]?.done; }); }
-    function setNotes(){ GAMES.forEach(g=>{ const el = byId(`note-${g.key}`); if(el) el.value = state[g.key]?.note ?? ""; }); }
-    function setCardStates(){ GAMES.forEach(g=>{ const c = byId(`chk-${g.key}`).closest(".card"); c.classList.toggle("done", !!state[g.key]?.done); }); }
-    function updateProgress(){
-      const done = GAMES.filter(g => state[g.key]?.done).length;
-      const pct = Math.round((done / GAMES.length) * 100);
-      byId("bar").style.width = pct + "%";
-      byId("pct").textContent = pct + "%";
-    }
-    function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
-    function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }catch(e){ return {}; } }
-    function byId(id){ return document.getElementById(id); }
-    updateProgress();
-  </script>
-</body>
-</html>
+    .icon{width:34px; height:34px; border-radius:10px; flex:0 0 auto;
